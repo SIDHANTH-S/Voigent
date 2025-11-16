@@ -1,0 +1,26 @@
+{
+  "name": "business-voice-agent",
+  "version": "1.0.0",
+  "description": "AI Voice Agent for Business Updates using Twilio and 11Labs",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "twilio": "^5.3.5",
+    "express": "^4.21.1",
+    "dotenv": "^16.4.7",
+    "axios": "^1.7.9",
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "twilio",
+    "11labs",
+    "voice-ai",
+    "business-analytics"
+  ],
+  "author": "",
+  "license": "ISC"
+}
