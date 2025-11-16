@@ -2,7 +2,7 @@ import axios from 'axios';
 import { systemPrompt, businessData } from './businessData.js';
 
 const OLLAMA_API = 'http://localhost:11434/api/generate';
-const USE_LLM_FOR_COMPLEX = true;
+const USE_LLM_FOR_COMPLEX = true; // Enable Ollama for intelligent responses
 
 /**
  * Enhanced AI Service with Advanced Intelligence
@@ -179,14 +179,17 @@ Respond as Priya - warm, smart, conversational. 2-3 sentences max. Use ₹ for r
     const metrics = this.calculateMetrics();
     let response = '';
 
-    // Route to appropriate handler
-    if (USE_LLM_FOR_COMPLEX && this.isComplexQuestion(userInput)) {
-      console.log('🤖 Using Phi-3 LLM for complex question');
-      response = await this.callPhi3(userInput);
+    // Route to appropriate handler - check simple patterns first
+    if (this.isGoodbye(input)) {
+      response = this.getGoodbyeMessage();
     }
     else if (this.isGreeting(input)) {
       response = this.getRandomOpening();
       this.contextMemory.discussedTopics = [];
+    }
+    else if (USE_LLM_FOR_COMPLEX && this.isComplexQuestion(userInput)) {
+      console.log('🤖 Using Phi-3 LLM for complex question');
+      response = await this.callPhi3(userInput);
     }
     else if (this.isBusinessOverview(input)) {
       response = this.generateBusinessOverview(metrics);
@@ -237,9 +240,6 @@ Respond as Priya - warm, smart, conversational. 2-3 sentences max. Use ₹ for r
     }
     else if (this.isFollowUp(input)) {
       response = this.handleFollowUp(input, metrics);
-    }
-    else if (this.isGoodbye(input)) {
-      response = this.getGoodbyeMessage();
     }
     else {
       response = this.generateContextualHelp();
@@ -536,18 +536,21 @@ Respond as Priya - warm, smart, conversational. 2-3 sentences max. Use ₹ for r
   getGoodbyeMessage() {
     const metrics = this.calculateMetrics();
     
+    // Simple acknowledgments for thank you
+    const simpleAcknowledgments = [
+      "You're welcome! Anytime you need insights, just call.",
+      "Happy to help! Feel free to reach out anytime.",
+      "No problem! I'm here whenever you need the numbers.",
+      "My pleasure! Call back anytime you want an update.",
+      "Glad I could help! Have a great day!"
+    ];
+    
     // Add a parting insight if there's something important
     if (metrics.outOfStockCount > 0 && !this.contextMemory.discussedTopics.includes('inventory')) {
-      return "Sounds good! Quick reminder - you've got 2 items out of stock worth restocking. Call anytime you need numbers!";
+      return "You're welcome! Quick reminder - you've got 2 items out of stock worth restocking. Call anytime!";
     }
     
-    const variations = [
-      "Great! Feel free to call whenever you need an update. Have a great day!",
-      "Sounds good! I'm here anytime you want to check on things. Take care!",
-      "Perfect! Call me whenever you need the numbers. Have a good one!",
-      "Anytime! Always happy to help you stay on top of things. Talk soon!"
-    ];
-    return this.randomChoice(variations);
+    return this.randomChoice(simpleAcknowledgments);
   }
 
   // Helper methods
